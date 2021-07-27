@@ -1,5 +1,5 @@
 import React from "react";
-import { moviesApi } from "../../api";
+import { moviesApi, tvApi} from "../../api";
 import SearchPresenter from "./SearchPresenter";
 
 export default class extends React.Component{
@@ -11,19 +11,33 @@ export default class extends React.Component{
     loading: false
   }
 
-  handleSubmit = () => {
+  handleSubmit = (event) => {
+    event.preventDefault();
     const { searchTerm } = this.state;
     if (searchTerm !== "") {
       this.searchByTerm()
     }
-  }
+  };
+
+  updateTerm = (event) => {
+    const { 
+      target: { value }
+    } = event;
+    this.setState({
+      searchTerm: value
+    });
+  };
 
   searchByTerm = async() => {
     const { searchTerm } = this.state;
     this.setState({ loading: true });
     try {
-      const { data: { result: movieResults }} = await moviesApi.search(searchTerm);
-      const { data: { result: tvResults }} = await moviesApi.search(searchTerm);
+      const { data: 
+        { results: movieResults }
+      } = await moviesApi.search(searchTerm);
+      const { data: 
+        { results: tvResults }
+      } = await tvApi.search(searchTerm);
       this.setState({ 
         movieResults, 
         tvResults, 
@@ -44,7 +58,8 @@ export default class extends React.Component{
         searchTerm={searchTerm}
         error={error}
         loading={loading}
-        handleSubmit={handleSubmit}
+        handleSubmit={this.handleSubmit}
+        updateTerm={this.updateTerm}
       />
     );
   }
